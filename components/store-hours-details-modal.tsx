@@ -88,7 +88,7 @@ export function StoreHoursDetailsModal({
               <span>Start Time</span>
               <span>End Time</span>
             </div>
-            {change.hours.map((h) => (
+            {(change.hours ?? [{ day: (change as any).day, startTime: (change as any).startTime, endTime: (change as any).endTime }]).map((h) => (
               <div
                 key={h.day}
                 className="grid grid-cols-3 gap-2 border-b px-3 py-1.5 last:border-b-0"
