@@ -75,6 +75,7 @@ export function StoreHoursDetailsModal({
           <DetailRow label="Store Name" value={change.storeName} />
           <DetailRow label="Manager" value={change.managerName} />
           <DetailRow label="Email" value={change.managerEmail} />
+          <DetailRow label="Day" value={change.day} />
           <DetailRow label="Start Time" value={change.startTime} />
           <DetailRow label="End Time" value={change.endTime} />
           <DetailRow label="Submitted" value={change.submittedDate} />

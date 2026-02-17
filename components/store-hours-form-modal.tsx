@@ -11,7 +11,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { StoreHoursChange } from "@/lib/types";
+
+const DAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
 import { saveStoreHoursChange } from "@/lib/store";
 
 interface StoreHoursFormModalProps {
@@ -32,6 +49,7 @@ export function StoreHoursFormModal({
   const [storeName, setStoreName] = useState("");
   const [managerName, setManagerName] = useState("");
   const [managerEmail, setManagerEmail] = useState("");
+  const [day, setDay] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -44,6 +62,7 @@ export function StoreHoursFormModal({
     if (!managerEmail.trim()) errs.managerEmail = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(managerEmail))
       errs.managerEmail = "Invalid email address";
+    if (!day) errs.day = "Day is required";
     if (!startTime) errs.startTime = "Start time is required";
     if (!endTime) errs.endTime = "End time is required";
     if (startTime && endTime && endTime <= startTime)
@@ -65,6 +84,7 @@ export function StoreHoursFormModal({
       storeName,
       managerName,
       managerEmail,
+      day,
       startTime,
       endTime,
       submittedDate: new Date().toLocaleDateString("en-US"),
@@ -80,6 +100,7 @@ export function StoreHoursFormModal({
           storeName,
           managerName,
           managerEmail,
+          day,
           startTime,
           endTime,
         }),
@@ -108,6 +129,7 @@ export function StoreHoursFormModal({
     setStoreName("");
     setManagerName("");
     setManagerEmail("");
+    setDay("");
     setStartTime("");
     setEndTime("");
     setErrors({});
@@ -172,6 +194,27 @@ export function StoreHoursFormModal({
                 <p className="text-sm text-destructive">{errors.managerEmail}</p>
               )}
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="shc-day">
+              Day <span className="text-destructive">*</span>
+            </Label>
+            <Select value={day} onValueChange={setDay}>
+              <SelectTrigger id="shc-day">
+                <SelectValue placeholder="Select day..." />
+              </SelectTrigger>
+              <SelectContent>
+                {DAYS.map((d) => (
+                  <SelectItem key={d} value={d}>
+                    {d}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.day && (
+              <p className="text-sm text-destructive">{errors.day}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

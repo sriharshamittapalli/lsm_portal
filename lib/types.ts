@@ -19,6 +19,7 @@ export interface StoreHoursChange {
   storeName: string;
   managerName: string;
   managerEmail: string;
+  day: string;
   startTime: string;
   endTime: string;
   submittedDate: string;

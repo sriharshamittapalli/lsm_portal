@@ -79,6 +79,7 @@ export function StoreHoursChanges() {
               <TableRow>
                 <TableHead>ID</TableHead>
                 <TableHead>Store Name</TableHead>
+                <TableHead>Day</TableHead>
                 <TableHead>Start Time</TableHead>
                 <TableHead>End Time</TableHead>
                 <TableHead>Submitted</TableHead>
@@ -91,6 +92,7 @@ export function StoreHoursChanges() {
                 <TableRow key={change.id}>
                   <TableCell className="font-medium">{change.id}</TableCell>
                   <TableCell>{change.storeName}</TableCell>
+                  <TableCell>{change.day}</TableCell>
                   <TableCell>{change.startTime}</TableCell>
                   <TableCell>{change.endTime}</TableCell>
                   <TableCell>{change.submittedDate}</TableCell>

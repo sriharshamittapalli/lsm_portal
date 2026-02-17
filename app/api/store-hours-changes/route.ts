@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       storeName: body.storeName,
       managerName: body.managerName,
       managerEmail: body.managerEmail,
+      day: body.day,
       startTime: body.startTime,
       endTime: body.endTime,
     };

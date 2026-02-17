@@ -59,11 +59,11 @@ export function DesignRequests() {
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
           <Button onClick={() => setFormOpen(true)} className="w-full shrink-0 sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
-            New Request
+            Custom Design Request
           </Button>
           <Button variant="outline" onClick={() => setJotFormOpen(true)} className="w-full shrink-0 sm:w-auto">
             <ClipboardList className="mr-2 h-4 w-4" />
-            JotForm Request
+            Design Request
           </Button>
         </div>
       </div>
