@@ -56,6 +56,7 @@ export function RequestFormModal({
   const [neededByDate, setNeededByDate] = useState("");
   const [fileName, setFileName] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
 
   function validate() {
     const errs: Record<string, string> = {};
@@ -69,9 +70,11 @@ export function RequestFormModal({
     return Object.keys(errs).length === 0;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
+
+    setSubmitting(true);
 
     const today = new Date();
     const submittedDate = today.toLocaleDateString("en-US");
@@ -85,8 +88,10 @@ export function RequestFormModal({
       eta = etaDate.toLocaleDateString("en-US");
     }
 
+    const requestId = generateId();
+
     const request: DesignRequest = {
-      id: generateId(),
+      id: requestId,
       storeNumber,
       storeName,
       contactName,
@@ -103,10 +108,42 @@ export function RequestFormModal({
       eta,
     };
 
+    try {
+      const res = await fetch("/api/design-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: requestId,
+          storeNumber,
+          storeName,
+          contactName,
+          email,
+          phone,
+          requestType,
+          description,
+          neededByDate: neededByDate
+            ? new Date(neededByDate).toLocaleDateString("en-US")
+            : "",
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Failed to submit request. Please try again.");
+        setSubmitting(false);
+        return;
+      }
+    } catch {
+      alert("Network error. Please check your connection and try again.");
+      setSubmitting(false);
+      return;
+    }
+
     saveRequest(request);
     onRequestCreated(request);
     resetForm();
     onOpenChange(false);
+    setSubmitting(false);
   }
 
   function resetForm() {
@@ -265,7 +302,9 @@ export function RequestFormModal({
             >
               Cancel
             </Button>
-            <Button type="submit">Submit Request</Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? "Submitting..." : "Submit Request"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
