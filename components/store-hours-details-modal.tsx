@@ -75,10 +75,30 @@ export function StoreHoursDetailsModal({
           <DetailRow label="Store Name" value={change.storeName} />
           <DetailRow label="Manager" value={change.managerName} />
           <DetailRow label="Email" value={change.managerEmail} />
-          <DetailRow label="Day" value={change.day} />
-          <DetailRow label="Start Time" value={change.startTime} />
-          <DetailRow label="End Time" value={change.endTime} />
           <DetailRow label="Submitted" value={change.submittedDate} />
+        </div>
+
+        <Separator />
+
+        <div className="space-y-2">
+          <h4 className="text-sm font-semibold text-foreground">Weekly Hours</h4>
+          <div className="rounded-lg border">
+            <div className="grid grid-cols-3 gap-2 border-b bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground">
+              <span>Day</span>
+              <span>Start Time</span>
+              <span>End Time</span>
+            </div>
+            {change.hours.map((h) => (
+              <div
+                key={h.day}
+                className="grid grid-cols-3 gap-2 border-b px-3 py-1.5 last:border-b-0"
+              >
+                <span className="text-sm font-medium">{h.day}</span>
+                <span className="text-sm">{h.startTime}</span>
+                <span className="text-sm">{h.endTime}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

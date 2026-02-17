@@ -14,14 +14,18 @@ export interface DesignRequest {
   eta: string;
 }
 
+export interface DayHours {
+  day: string;
+  startTime: string;
+  endTime: string;
+}
+
 export interface StoreHoursChange {
   id: string;
   storeName: string;
   managerName: string;
   managerEmail: string;
-  day: string;
-  startTime: string;
-  endTime: string;
+  hours: DayHours[];
   submittedDate: string;
   status: "Pending" | "In Progress" | "Completed";
 }

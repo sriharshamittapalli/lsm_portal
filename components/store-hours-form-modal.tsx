@@ -11,25 +11,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { StoreHoursChange } from "@/lib/types";
+import { StoreHoursChange, DayHours } from "@/lib/types";
+import { saveStoreHoursChange } from "@/lib/store";
 
 const DAYS = [
+  "Sunday",
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
   "Saturday",
-  "Sunday",
 ];
-import { saveStoreHoursChange } from "@/lib/store";
+
+const DEFAULT_START = "12:00";
+const DEFAULT_END = "20:30";
+
+function makeDefaultHours(): DayHours[] {
+  return DAYS.map((day) => ({ day, startTime: DEFAULT_START, endTime: DEFAULT_END }));
+}
 
 interface StoreHoursFormModalProps {
   open: boolean;
@@ -49,11 +49,13 @@ export function StoreHoursFormModal({
   const [storeName, setStoreName] = useState("");
   const [managerName, setManagerName] = useState("");
   const [managerEmail, setManagerEmail] = useState("");
-  const [day, setDay] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [hours, setHours] = useState<DayHours[]>(makeDefaultHours);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+
+  function updateHour(index: number, field: "startTime" | "endTime", value: string) {
+    setHours((prev) => prev.map((h, i) => (i === index ? { ...h, [field]: value } : h)));
+  }
 
   function validate() {
     const errs: Record<string, string> = {};
@@ -62,11 +64,14 @@ export function StoreHoursFormModal({
     if (!managerEmail.trim()) errs.managerEmail = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(managerEmail))
       errs.managerEmail = "Invalid email address";
-    if (!day) errs.day = "Day is required";
-    if (!startTime) errs.startTime = "Start time is required";
-    if (!endTime) errs.endTime = "End time is required";
-    if (startTime && endTime && endTime <= startTime)
-      errs.endTime = "End time must be after start time";
+
+    hours.forEach((h, i) => {
+      if (!h.startTime) errs[`start-${i}`] = "Required";
+      if (!h.endTime) errs[`end-${i}`] = "Required";
+      if (h.startTime && h.endTime && h.endTime <= h.startTime)
+        errs[`end-${i}`] = "Must be after start";
+    });
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }
@@ -84,9 +89,7 @@ export function StoreHoursFormModal({
       storeName,
       managerName,
       managerEmail,
-      day,
-      startTime,
-      endTime,
+      hours,
       submittedDate: new Date().toLocaleDateString("en-US"),
       status: "Pending",
     };
@@ -100,9 +103,7 @@ export function StoreHoursFormModal({
           storeName,
           managerName,
           managerEmail,
-          day,
-          startTime,
-          endTime,
+          hours,
         }),
       });
 
@@ -129,9 +130,7 @@ export function StoreHoursFormModal({
     setStoreName("");
     setManagerName("");
     setManagerEmail("");
-    setDay("");
-    setStartTime("");
-    setEndTime("");
+    setHours(makeDefaultHours());
     setErrors({});
   }
 
@@ -143,7 +142,7 @@ export function StoreHoursFormModal({
         onOpenChange(val);
       }}
     >
-      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>New Store Hours Change</DialogTitle>
         </DialogHeader>
@@ -197,54 +196,45 @@ export function StoreHoursFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="shc-day">
-              Day <span className="text-destructive">*</span>
+            <Label>
+              Weekly Hours <span className="text-destructive">*</span>
             </Label>
-            <Select value={day} onValueChange={setDay}>
-              <SelectTrigger id="shc-day">
-                <SelectValue placeholder="Select day..." />
-              </SelectTrigger>
-              <SelectContent>
-                {DAYS.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.day && (
-              <p className="text-sm text-destructive">{errors.day}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="shc-startTime">
-                Start Time <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="shc-startTime"
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-              />
-              {errors.startTime && (
-                <p className="text-sm text-destructive">{errors.startTime}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="shc-endTime">
-                End Time <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="shc-endTime"
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-              />
-              {errors.endTime && (
-                <p className="text-sm text-destructive">{errors.endTime}</p>
-              )}
+            <div className="rounded-lg border">
+              <div className="grid grid-cols-[120px_1fr_1fr] gap-2 border-b bg-muted/50 px-3 py-2 text-sm font-medium text-muted-foreground">
+                <span>Day</span>
+                <span>Start Time</span>
+                <span>End Time</span>
+              </div>
+              {hours.map((h, i) => (
+                <div
+                  key={h.day}
+                  className="grid grid-cols-[120px_1fr_1fr] items-center gap-2 border-b px-3 py-2 last:border-b-0"
+                >
+                  <span className="text-sm font-medium">{h.day}</span>
+                  <div>
+                    <Input
+                      type="time"
+                      value={h.startTime}
+                      onChange={(e) => updateHour(i, "startTime", e.target.value)}
+                      className="h-8"
+                    />
+                    {errors[`start-${i}`] && (
+                      <p className="text-xs text-destructive">{errors[`start-${i}`]}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Input
+                      type="time"
+                      value={h.endTime}
+                      onChange={(e) => updateHour(i, "endTime", e.target.value)}
+                      className="h-8"
+                    />
+                    {errors[`end-${i}`] && (
+                      <p className="text-xs text-destructive">{errors[`end-${i}`]}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 

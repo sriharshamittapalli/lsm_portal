@@ -13,14 +13,26 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
+    const dayKeys = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const hoursFlat: Record<string, string> = {};
+    const hours = body.hours as { day: string; startTime: string; endTime: string }[];
+
+    for (const h of hours) {
+      const prefix = dayKeys.find((k) =>
+        h.day.toLowerCase().startsWith(k.toLowerCase())
+      );
+      if (prefix) {
+        hoursFlat[`${prefix}_Start`] = h.startTime;
+        hoursFlat[`${prefix}_End`] = h.endTime;
+      }
+    }
+
     const payload = {
       id: body.id,
       storeName: body.storeName,
       managerName: body.managerName,
       managerEmail: body.managerEmail,
-      day: body.day,
-      startTime: body.startTime,
-      endTime: body.endTime,
+      ...hoursFlat,
     };
 
     const response = await fetch(flowUrl, {
