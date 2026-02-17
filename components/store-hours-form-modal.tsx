@@ -35,6 +35,7 @@ export function StoreHoursFormModal({
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
 
   function validate() {
     const errs: Record<string, string> = {};
@@ -51,12 +52,16 @@ export function StoreHoursFormModal({
     return Object.keys(errs).length === 0;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
 
+    setSubmitting(true);
+
+    const changeId = generateId();
+
     const change: StoreHoursChange = {
-      id: generateId(),
+      id: changeId,
       storeName,
       managerName,
       managerEmail,
@@ -66,10 +71,37 @@ export function StoreHoursFormModal({
       status: "Pending",
     };
 
+    try {
+      const res = await fetch("/api/store-hours-changes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: changeId,
+          storeName,
+          managerName,
+          managerEmail,
+          startTime,
+          endTime,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Failed to submit. Please try again.");
+        setSubmitting(false);
+        return;
+      }
+    } catch {
+      alert("Network error. Please check your connection and try again.");
+      setSubmitting(false);
+      return;
+    }
+
     saveStoreHoursChange(change);
     onChangeCreated(change);
     resetForm();
     onOpenChange(false);
+    setSubmitting(false);
   }
 
   function resetForm() {
@@ -181,7 +213,9 @@ export function StoreHoursFormModal({
             >
               Cancel
             </Button>
-            <Button type="submit">Submit Change</Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? "Submitting..." : "Submit Change"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
