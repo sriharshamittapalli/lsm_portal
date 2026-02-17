@@ -11,8 +11,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { PriceChange } from "@/lib/types";
 import { savePriceChange } from "@/lib/store";
+
+const REQUEST_TYPES = ["InStore", "Online", "NCR", "Others"];
 
 interface PriceChangeFormModalProps {
   open: boolean;
@@ -32,6 +42,8 @@ export function PriceChangeFormModal({
   const [storeName, setStoreName] = useState("");
   const [managerName, setManagerName] = useState("");
   const [managerEmail, setManagerEmail] = useState("");
+  const [priceChangeRequest, setPriceChangeRequest] = useState("");
+  const [description, setDescription] = useState("");
   const [currentPrice, setCurrentPrice] = useState("");
   const [updatedPrice, setUpdatedPrice] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -44,6 +56,8 @@ export function PriceChangeFormModal({
     if (!managerEmail.trim()) errs.managerEmail = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(managerEmail))
       errs.managerEmail = "Invalid email address";
+    if (!priceChangeRequest) errs.priceChangeRequest = "Request type is required";
+    if (!description.trim()) errs.description = "Description is required";
     if (!currentPrice) errs.currentPrice = "Current price is required";
     else if (parseFloat(currentPrice) <= 0)
       errs.currentPrice = "Price must be a positive number";
@@ -67,6 +81,8 @@ export function PriceChangeFormModal({
       storeName,
       managerName,
       managerEmail,
+      priceChangeRequest,
+      description,
       currentPrice,
       updatedPrice,
       submittedDate: new Date().toLocaleDateString("en-US"),
@@ -82,6 +98,8 @@ export function PriceChangeFormModal({
           storeName,
           managerName,
           managerEmail,
+          priceChangeRequest,
+          description,
           currentPrice,
           updatedPrice,
         }),
@@ -110,6 +128,8 @@ export function PriceChangeFormModal({
     setStoreName("");
     setManagerName("");
     setManagerEmail("");
+    setPriceChangeRequest("");
+    setDescription("");
     setCurrentPrice("");
     setUpdatedPrice("");
     setErrors({});
@@ -174,6 +194,43 @@ export function PriceChangeFormModal({
                 <p className="text-sm text-destructive">{errors.managerEmail}</p>
               )}
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="pc-priceChangeRequest">
+              Price Change Request <span className="text-destructive">*</span>
+            </Label>
+            <Select value={priceChangeRequest} onValueChange={setPriceChangeRequest}>
+              <SelectTrigger id="pc-priceChangeRequest">
+                <SelectValue placeholder="Select type..." />
+              </SelectTrigger>
+              <SelectContent>
+                {REQUEST_TYPES.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.priceChangeRequest && (
+              <p className="text-sm text-destructive">{errors.priceChangeRequest}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="pc-description">
+              Description <span className="text-destructive">*</span>
+            </Label>
+            <Textarea
+              id="pc-description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe the price change reason..."
+              rows={3}
+            />
+            {errors.description && (
+              <p className="text-sm text-destructive">{errors.description}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

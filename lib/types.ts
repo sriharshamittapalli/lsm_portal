@@ -31,6 +31,8 @@ export interface PriceChange {
   storeName: string;
   managerName: string;
   managerEmail: string;
+  priceChangeRequest: string;
+  description: string;
   currentPrice: string;
   updatedPrice: string;
   submittedDate: string;

@@ -75,6 +75,8 @@ export function PriceChangeDetailsModal({
           <DetailRow label="Store Name" value={change.storeName} />
           <DetailRow label="Manager" value={change.managerName} />
           <DetailRow label="Email" value={change.managerEmail} />
+          <DetailRow label="Request Type" value={change.priceChangeRequest} />
+          <DetailRow label="Description" value={change.description} />
           <DetailRow label="Current Price" value={`$${change.currentPrice}`} />
           <DetailRow label="Updated Price" value={`$${change.updatedPrice}`} />
           <DetailRow label="Submitted" value={change.submittedDate} />

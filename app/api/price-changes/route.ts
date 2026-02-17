@@ -18,6 +18,8 @@ export async function POST(req: NextRequest) {
       storeName: body.storeName,
       managerName: body.managerName,
       managerEmail: body.managerEmail,
+      priceChangeRequest: body.priceChangeRequest,
+      description: body.description,
       currentPrice: body.currentPrice,
       updatedPrice: body.updatedPrice,
     };
