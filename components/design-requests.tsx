@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Eye, ClipboardList } from "lucide-react";
+import { Plus, Eye, ClipboardList, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,6 +15,7 @@ import {
 import { RequestFormModal } from "@/components/request-form-modal";
 import { RequestDetailsModal } from "@/components/request-details-modal";
 import { JotFormModal } from "@/components/jotform-modal";
+import { LsmRequestFormModal } from "@/components/lsm-request-form-modal";
 import { getRequests } from "@/lib/store";
 import { DesignRequest } from "@/lib/types";
 
@@ -33,6 +34,7 @@ export function DesignRequests() {
   const [requests, setRequests] = useState<DesignRequest[]>([]);
   const [formOpen, setFormOpen] = useState(false);
   const [jotFormOpen, setJotFormOpen] = useState(false);
+  const [lsmFormOpen, setLsmFormOpen] = useState(false);
   const [detailsRequest, setDetailsRequest] = useState<DesignRequest | null>(
     null
   );
@@ -64,6 +66,10 @@ export function DesignRequests() {
           <Button variant="outline" onClick={() => setJotFormOpen(true)} className="w-full shrink-0 sm:w-auto">
             <ClipboardList className="mr-2 h-4 w-4" />
             Design Request
+          </Button>
+          <Button variant="outline" onClick={() => setLsmFormOpen(true)} className="w-full shrink-0 sm:w-auto">
+            <FileText className="mr-2 h-4 w-4" />
+            LSM Request
           </Button>
         </div>
       </div>
@@ -142,6 +148,8 @@ export function DesignRequests() {
       />
 
       <JotFormModal open={jotFormOpen} onOpenChange={setJotFormOpen} />
+
+      <LsmRequestFormModal open={lsmFormOpen} onOpenChange={setLsmFormOpen} />
     </div>
   );
 }

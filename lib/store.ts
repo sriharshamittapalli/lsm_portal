@@ -1,4 +1,4 @@
-import { DesignRequest, StoreHoursChange, PriceChange } from "./types";
+import { DesignRequest, StoreHoursChange, PriceChange, LsmRequest } from "./types";
 
 const STORAGE_KEY = "yogurtland_design_requests";
 
@@ -54,4 +54,23 @@ export function savePriceChange(change: PriceChange): void {
 
 export function getPriceChangeById(id: string): PriceChange | undefined {
   return getPriceChanges().find((c) => c.id === id);
+}
+
+// LSM Requests
+const LSM_REQUESTS_KEY = "yogurtland_lsm_requests";
+
+export function getLsmRequests(): LsmRequest[] {
+  if (typeof window === "undefined") return [];
+  const data = localStorage.getItem(LSM_REQUESTS_KEY);
+  return data ? JSON.parse(data) : [];
+}
+
+export function saveLsmRequest(request: LsmRequest): void {
+  const requests = getLsmRequests();
+  requests.push(request);
+  localStorage.setItem(LSM_REQUESTS_KEY, JSON.stringify(requests));
+}
+
+export function getLsmRequestById(id: string): LsmRequest | undefined {
+  return getLsmRequests().find((r) => r.id === id);
 }

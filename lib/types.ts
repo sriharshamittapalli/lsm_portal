@@ -42,3 +42,29 @@ export interface PriceChange {
   submittedDate: string;
   status: "Pending" | "In Progress" | "Completed";
 }
+
+export interface LsmRequest {
+  id: string;
+  requestDate: string;
+  storeLocation: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  lsmTypes: string[];
+  desiredMessage: string;
+  couponOffers: string;
+  couponExpirationDate: string;
+  specialInstructions: string;
+  sizeWidth: string;
+  sizeHeight: string;
+  color: string[];
+  fileType: string[];
+  quantity: string;
+  fileSpecialInstructions: string;
+  desired1stRoundDate: string;
+  artDueDate: string;
+  publicationStartDate: string;
+  additionalInstructions: string;
+  status: "Pending" | "In Progress" | "Completed";
+  submittedDate: string;
+}
