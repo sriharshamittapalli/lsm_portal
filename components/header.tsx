@@ -1,6 +1,7 @@
 "use client";
 
-import { CupSoda, LogOut } from "lucide-react";
+import Image from "next/image";
+import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -8,10 +9,16 @@ export function Header() {
   return (
     <header className="border-b bg-primary text-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <CupSoda className="h-6 w-6 shrink-0 sm:h-8 sm:w-8" />
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Image
+            src="/logo-yogurtland.svg"
+            alt="Yogurtland"
+            width={140}
+            height={40}
+            className="h-8 w-auto brightness-0 invert sm:h-10"
+            priority
+          />
           <div>
-            <h1 className="text-lg font-bold leading-tight sm:text-xl">Yogurtland</h1>
             <p className="text-xs text-white/80 sm:text-sm">
               Local Store Marketing Portal
             </p>
