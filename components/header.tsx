@@ -9,7 +9,7 @@ export function Header() {
   return (
     <header className="border-b bg-primary text-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex flex-col items-start">
           <Image
             src="/logo-yogurtland.svg"
             alt="Yogurtland"
@@ -18,11 +18,9 @@ export function Header() {
             className="h-8 w-auto brightness-0 invert sm:h-10"
             priority
           />
-          <div>
-            <p className="text-xs text-white/80 sm:text-sm">
-              Local Store Marketing Portal
-            </p>
-          </div>
+          <p className="mt-1 text-xs text-white/80 sm:text-sm">
+            Local Store Marketing Portal
+          </p>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4">
