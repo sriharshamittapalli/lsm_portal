@@ -59,17 +59,13 @@ export function DesignRequests() {
           </p>
         </div>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <Button onClick={() => setFormOpen(true)} className="w-full shrink-0 sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" />
-            Custom Design Request
-          </Button>
           <Button variant="outline" onClick={() => setJotFormOpen(true)} className="w-full shrink-0 sm:w-auto">
             <ClipboardList className="mr-2 h-4 w-4" />
-            Design Request
+            Evergreen Order Form
           </Button>
           <Button variant="outline" onClick={() => setLsmFormOpen(true)} className="w-full shrink-0 sm:w-auto">
             <FileText className="mr-2 h-4 w-4" />
-            LSM Request
+            Custom Design Request
           </Button>
         </div>
       </div>

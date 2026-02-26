@@ -37,7 +37,7 @@ const LSM_TYPES = [
 ];
 
 const COLOR_OPTIONS = ["4-color", "Black & White", "Other"];
-const FILE_TYPE_OPTIONS = ["JPG", "PDF", "PNG", "HTML", "Other"];
+const FILE_TYPE_OPTIONS = ["JPG", "PDF", "PNG", "Other"];
 
 function generateId() {
   return "LSM-" + String(Date.now()).slice(-6);

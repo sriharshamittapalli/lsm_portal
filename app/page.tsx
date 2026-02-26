@@ -14,66 +14,66 @@ export default function Home() {
 
       <main className="w-full flex-1">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
-        <Tabs defaultValue="design-requests">
-          <TabsList className="mb-6 w-full justify-start overflow-x-auto">
-            <TabsTrigger value="design-requests">
-              <Palette className="mr-2 h-4 w-4" />
-              Design Requests
-            </TabsTrigger>
-            <TabsTrigger value="marketing-assets">
-              <FolderOpen className="mr-2 h-4 w-4" />
-              Marketing Assets
-            </TabsTrigger>
-            <TabsTrigger value="brand-guidelines">
-              <BookOpen className="mr-2 h-4 w-4" />
-              Brand Guidelines
-            </TabsTrigger>
-            <TabsTrigger value="store-hours">
-              <Clock className="mr-2 h-4 w-4" />
-              Store Hours Change
-            </TabsTrigger>
-            <TabsTrigger value="price-change">
-              <DollarSign className="mr-2 h-4 w-4" />
-              Price Change
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="design-requests">
-            <DesignRequests />
-          </TabsContent>
-
-          <TabsContent value="marketing-assets">
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-20">
-              <FolderOpen className="mb-4 h-12 w-12 text-muted-foreground/50" />
-              <h3 className="text-lg font-semibold text-muted-foreground">
+          <Tabs defaultValue="design-requests">
+            <TabsList className="mb-6 w-full justify-start overflow-x-auto">
+              <TabsTrigger value="design-requests">
+                <Palette className="mr-2 h-4 w-4" />
+                Design Requests
+              </TabsTrigger>
+              <TabsTrigger value="marketing-assets">
+                <FolderOpen className="mr-2 h-4 w-4" />
                 Marketing Assets
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Coming Soon — Downloadable templates, logos, and brand assets.
-              </p>
-            </div>
-          </TabsContent>
+              </TabsTrigger>
+              <TabsTrigger value="gift-cards">
+                <BookOpen className="mr-2 h-4 w-4" />
+                Gift Cards
+              </TabsTrigger>
+              <TabsTrigger value="store-hours">
+                <Clock className="mr-2 h-4 w-4" />
+                Store Hours Change
+              </TabsTrigger>
+              <TabsTrigger value="price-change">
+                <DollarSign className="mr-2 h-4 w-4" />
+                Price Change
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="brand-guidelines">
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-20">
-              <BookOpen className="mb-4 h-12 w-12 text-muted-foreground/50" />
-              <h3 className="text-lg font-semibold text-muted-foreground">
-                Brand Guidelines
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Coming Soon — Official Yogurtland brand guidelines and usage rules.
-              </p>
-            </div>
-          </TabsContent>
+            <TabsContent value="design-requests">
+              <DesignRequests />
+            </TabsContent>
 
-          <TabsContent value="store-hours">
-            <StoreHoursChanges />
-          </TabsContent>
+            <TabsContent value="marketing-assets">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-20">
+                <FolderOpen className="mb-4 h-12 w-12 text-muted-foreground/50" />
+                <h3 className="text-lg font-semibold text-muted-foreground">
+                  Marketing Assets
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Coming Soon — Downloadable templates, logos, and brand assets.
+                </p>
+              </div>
+            </TabsContent>
 
-          <TabsContent value="price-change">
-            <PriceChanges />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="brand-guidelines">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-20">
+                <BookOpen className="mb-4 h-12 w-12 text-muted-foreground/50" />
+                <h3 className="text-lg font-semibold text-muted-foreground">
+                  Brand Guidelines
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Coming Soon — Official Yogurtland brand guidelines and usage rules.
+                </p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="store-hours">
+              <StoreHoursChanges />
+            </TabsContent>
+
+            <TabsContent value="price-change">
+              <PriceChanges />
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
 
