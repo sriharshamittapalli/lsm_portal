@@ -17,8 +17,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, X, Search } from "lucide-react";
-import { StoreHoursChange, DayHours } from "@/lib/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Check, ChevronsUpDown, X, Search, Plus, Trash2 } from "lucide-react";
+import { StoreHoursChange, DayHours, HolidayEntry } from "@/lib/types";
 import { saveStoreHoursChange } from "@/lib/store";
 import { STORES } from "@/lib/stores";
 
@@ -59,7 +67,11 @@ export function StoreHoursFormModal({
   const [storeSearch, setStoreSearch] = useState("");
   const [managerName, setManagerName] = useState("");
   const [managerEmail, setManagerEmail] = useState("");
+  const [changeType, setChangeType] = useState<"new_hours" | "temporary_close" | "holiday_hours">("new_hours");
   const [hours, setHours] = useState<DayHours[]>(makeDefaultHours);
+  const [closeDate, setCloseDate] = useState("");
+  const [closeReason, setCloseReason] = useState("");
+  const [holidays, setHolidays] = useState<HolidayEntry[]>([{ date: "", name: "" }]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -79,6 +91,18 @@ export function StoreHoursFormModal({
     setHours((prev) => prev.map((h, i) => (i === index ? { ...h, [field]: value } : h)));
   }
 
+  function addHoliday() {
+    setHolidays((prev) => [...prev, { date: "", name: "" }]);
+  }
+
+  function removeHoliday(index: number) {
+    setHolidays((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function updateHoliday(index: number, field: "date" | "name", value: string) {
+    setHolidays((prev) => prev.map((h, i) => (i === index ? { ...h, [field]: value } : h)));
+  }
+
   function validate() {
     const errs: Record<string, string> = {};
     if (selectedStores.length === 0) errs.storeName = "At least one store is required";
@@ -87,12 +111,22 @@ export function StoreHoursFormModal({
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(managerEmail))
       errs.managerEmail = "Invalid email address";
 
-    hours.forEach((h, i) => {
-      if (!h.startTime) errs[`start-${i}`] = "Required";
-      if (!h.endTime) errs[`end-${i}`] = "Required";
-      if (h.startTime && h.endTime && h.endTime <= h.startTime)
-        errs[`end-${i}`] = "Must be after start";
-    });
+    if (changeType === "new_hours") {
+      hours.forEach((h, i) => {
+        if (!h.startTime) errs[`start-${i}`] = "Required";
+        if (!h.endTime) errs[`end-${i}`] = "Required";
+        if (h.startTime && h.endTime && h.endTime <= h.startTime)
+          errs[`end-${i}`] = "Must be after start";
+      });
+    } else if (changeType === "temporary_close") {
+      if (!closeDate) errs.closeDate = "Date is required";
+      if (!closeReason.trim()) errs.closeReason = "Reason is required";
+    } else if (changeType === "holiday_hours") {
+      holidays.forEach((h, i) => {
+        if (!h.date) errs[`holiday-date-${i}`] = "Date is required";
+        if (!h.name.trim()) errs[`holiday-name-${i}`] = "Holiday name is required";
+      });
+    }
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -111,7 +145,11 @@ export function StoreHoursFormModal({
       storeName: selectedStores,
       managerName,
       managerEmail,
-      hours,
+      changeType,
+      hours: changeType === "new_hours" ? hours : [],
+      changeDate: changeType === "temporary_close" ? closeDate : undefined,
+      changeNote: changeType === "temporary_close" ? closeReason : undefined,
+      holidays: changeType === "holiday_hours" ? holidays : undefined,
       submittedDate: new Date().toLocaleDateString("en-US"),
       status: "Pending",
     };
@@ -125,7 +163,11 @@ export function StoreHoursFormModal({
           storeName: selectedStores,
           managerName,
           managerEmail,
-          hours,
+          changeType,
+          hours: changeType === "new_hours" ? hours : undefined,
+          changeDate: changeType === "temporary_close" ? closeDate : undefined,
+          changeNote: changeType === "temporary_close" ? closeReason : undefined,
+          holidays: changeType === "holiday_hours" ? holidays : undefined,
         }),
       });
 
@@ -153,7 +195,11 @@ export function StoreHoursFormModal({
     setStoreSearch("");
     setManagerName("");
     setManagerEmail("");
+    setChangeType("new_hours");
     setHours(makeDefaultHours());
+    setCloseDate("");
+    setCloseReason("");
+    setHolidays([{ date: "", name: "" }]);
     setErrors({});
   }
 
@@ -246,6 +292,22 @@ export function StoreHoursFormModal({
             )}
           </div>
 
+          <div className="space-y-2">
+            <Label>
+              Change Type <span className="text-destructive">*</span>
+            </Label>
+            <Select value={changeType} onValueChange={(v) => setChangeType(v as typeof changeType)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="new_hours">New Store Hours</SelectItem>
+                <SelectItem value="temporary_close">Temporary Close</SelectItem>
+                <SelectItem value="holiday_hours">Holiday Hours</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="shc-managerName">
@@ -278,48 +340,134 @@ export function StoreHoursFormModal({
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>
-              Weekly Hours <span className="text-destructive">*</span>
-            </Label>
-            <div className="rounded-lg border">
-              <div className="grid grid-cols-[120px_1fr_1fr] gap-2 border-b bg-muted/50 px-3 py-2 text-sm font-medium text-muted-foreground">
-                <span>Day</span>
-                <span>Start Time</span>
-                <span>End Time</span>
-              </div>
-              {hours.map((h, i) => (
-                <div
-                  key={h.day}
-                  className="grid grid-cols-[120px_1fr_1fr] items-center gap-2 border-b px-3 py-2 last:border-b-0"
-                >
-                  <span className="text-sm font-medium">{h.day}</span>
-                  <div>
-                    <Input
-                      type="time"
-                      value={h.startTime}
-                      onChange={(e) => updateHour(i, "startTime", e.target.value)}
-                      className="h-8"
-                    />
-                    {errors[`start-${i}`] && (
-                      <p className="text-xs text-destructive">{errors[`start-${i}`]}</p>
-                    )}
-                  </div>
-                  <div>
-                    <Input
-                      type="time"
-                      value={h.endTime}
-                      onChange={(e) => updateHour(i, "endTime", e.target.value)}
-                      className="h-8"
-                    />
-                    {errors[`end-${i}`] && (
-                      <p className="text-xs text-destructive">{errors[`end-${i}`]}</p>
-                    )}
-                  </div>
+          {changeType === "new_hours" && (
+            <div className="space-y-2">
+              <Label>
+                Weekly Hours <span className="text-destructive">*</span>
+              </Label>
+              <div className="rounded-lg border">
+                <div className="grid grid-cols-[120px_1fr_1fr] gap-2 border-b bg-muted/50 px-3 py-2 text-sm font-medium text-muted-foreground">
+                  <span>Day</span>
+                  <span>Start Time</span>
+                  <span>End Time</span>
                 </div>
-              ))}
+                {hours.map((h, i) => (
+                  <div
+                    key={h.day}
+                    className="grid grid-cols-[120px_1fr_1fr] items-center gap-2 border-b px-3 py-2 last:border-b-0"
+                  >
+                    <span className="text-sm font-medium">{h.day}</span>
+                    <div>
+                      <Input
+                        type="time"
+                        value={h.startTime}
+                        onChange={(e) => updateHour(i, "startTime", e.target.value)}
+                        className="h-8"
+                      />
+                      {errors[`start-${i}`] && (
+                        <p className="text-xs text-destructive">{errors[`start-${i}`]}</p>
+                      )}
+                    </div>
+                    <div>
+                      <Input
+                        type="time"
+                        value={h.endTime}
+                        onChange={(e) => updateHour(i, "endTime", e.target.value)}
+                        className="h-8"
+                      />
+                      {errors[`end-${i}`] && (
+                        <p className="text-xs text-destructive">{errors[`end-${i}`]}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {changeType === "temporary_close" && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="shc-closeDate">
+                  Close Date <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="shc-closeDate"
+                  type="date"
+                  value={closeDate}
+                  onChange={(e) => setCloseDate(e.target.value)}
+                />
+                {errors.closeDate && (
+                  <p className="text-sm text-destructive">{errors.closeDate}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="shc-closeReason">
+                  Reason <span className="text-destructive">*</span>
+                </Label>
+                <Textarea
+                  id="shc-closeReason"
+                  value={closeReason}
+                  onChange={(e) => setCloseReason(e.target.value)}
+                  placeholder="Reason for temporary closure"
+                  rows={3}
+                />
+                {errors.closeReason && (
+                  <p className="text-sm text-destructive">{errors.closeReason}</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {changeType === "holiday_hours" && (
+            <div className="space-y-3">
+              <Label>
+                Holidays <span className="text-destructive">*</span>
+              </Label>
+              <div className="space-y-3">
+                {holidays.map((h, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <div className="flex-1 space-y-1">
+                      <Input
+                        type="date"
+                        value={h.date}
+                        onChange={(e) => updateHoliday(i, "date", e.target.value)}
+                        placeholder="Date"
+                      />
+                      {errors[`holiday-date-${i}`] && (
+                        <p className="text-xs text-destructive">{errors[`holiday-date-${i}`]}</p>
+                      )}
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <Input
+                        value={h.name}
+                        onChange={(e) => updateHoliday(i, "name", e.target.value)}
+                        placeholder="Holiday name"
+                      />
+                      {errors[`holiday-name-${i}`] && (
+                        <p className="text-xs text-destructive">{errors[`holiday-name-${i}`]}</p>
+                      )}
+                    </div>
+                    {holidays.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="mt-0.5 shrink-0"
+                        onClick={() => removeHoliday(i)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={addHoliday}>
+                <Plus className="mr-1 h-4 w-4" />
+                Add Another Holiday
+              </Button>
+            </div>
+          )}
 
           <DialogFooter>
             <Button

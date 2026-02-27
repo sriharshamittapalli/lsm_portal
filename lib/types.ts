@@ -20,12 +20,21 @@ export interface DayHours {
   endTime: string;
 }
 
+export interface HolidayEntry {
+  date: string;
+  name: string;
+}
+
 export interface StoreHoursChange {
   id: string;
   storeName: string | string[];
   managerName: string;
   managerEmail: string;
+  changeType?: "new_hours" | "temporary_close" | "holiday_hours";
   hours: DayHours[];
+  changeDate?: string;
+  changeNote?: string;
+  holidays?: HolidayEntry[];
   submittedDate: string;
   status: "Pending" | "In Progress" | "Completed";
 }

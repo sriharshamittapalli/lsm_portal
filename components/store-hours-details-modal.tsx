@@ -73,6 +73,16 @@ export function StoreHoursDetailsModal({
 
         <div className="space-y-0 divide-y">
           <DetailRow label="Store Name" value={Array.isArray(change.storeName) ? change.storeName.join(", ") : change.storeName} />
+          <DetailRow
+            label="Change Type"
+            value={
+              change.changeType === "temporary_close"
+                ? "Temporary Close"
+                : change.changeType === "holiday_hours"
+                  ? "Holiday Hours"
+                  : "New Store Hours"
+            }
+          />
           <DetailRow label="Manager" value={change.managerName} />
           <DetailRow label="Email" value={change.managerEmail} />
           <DetailRow label="Submitted" value={change.submittedDate} />
@@ -80,26 +90,56 @@ export function StoreHoursDetailsModal({
 
         <Separator />
 
-        <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-foreground">Weekly Hours</h4>
-          <div className="rounded-lg border">
-            <div className="grid grid-cols-3 gap-2 border-b bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground">
-              <span>Day</span>
-              <span>Start Time</span>
-              <span>End Time</span>
-            </div>
-            {(change.hours ?? [{ day: (change as any).day, startTime: (change as any).startTime, endTime: (change as any).endTime }]).map((h) => (
-              <div
-                key={h.day}
-                className="grid grid-cols-3 gap-2 border-b px-3 py-1.5 last:border-b-0"
-              >
-                <span className="text-sm font-medium">{h.day}</span>
-                <span className="text-sm">{h.startTime}</span>
-                <span className="text-sm">{h.endTime}</span>
+        {(!change.changeType || change.changeType === "new_hours") && (
+          <div className="space-y-2">
+            <h4 className="text-sm font-semibold text-foreground">Weekly Hours</h4>
+            <div className="rounded-lg border">
+              <div className="grid grid-cols-3 gap-2 border-b bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground">
+                <span>Day</span>
+                <span>Start Time</span>
+                <span>End Time</span>
               </div>
-            ))}
+              {(change.hours ?? []).map((h) => (
+                <div
+                  key={h.day}
+                  className="grid grid-cols-3 gap-2 border-b px-3 py-1.5 last:border-b-0"
+                >
+                  <span className="text-sm font-medium">{h.day}</span>
+                  <span className="text-sm">{h.startTime}</span>
+                  <span className="text-sm">{h.endTime}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
+
+        {change.changeType === "temporary_close" && (
+          <div className="space-y-0 divide-y">
+            <DetailRow label="Close Date" value={change.changeDate || ""} />
+            <DetailRow label="Reason" value={change.changeNote || ""} />
+          </div>
+        )}
+
+        {change.changeType === "holiday_hours" && change.holidays && (
+          <div className="space-y-2">
+            <h4 className="text-sm font-semibold text-foreground">Holidays</h4>
+            <div className="rounded-lg border">
+              <div className="grid grid-cols-2 gap-2 border-b bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground">
+                <span>Date</span>
+                <span>Holiday Name</span>
+              </div>
+              {change.holidays.map((h, i) => (
+                <div
+                  key={i}
+                  className="grid grid-cols-2 gap-2 border-b px-3 py-1.5 last:border-b-0"
+                >
+                  <span className="text-sm">{h.date}</span>
+                  <span className="text-sm">{h.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

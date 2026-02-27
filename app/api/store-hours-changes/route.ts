@@ -13,27 +13,41 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const dayKeys = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const hoursFlat: Record<string, string> = {};
-    const hours = body.hours as { day: string; startTime: string; endTime: string }[];
+    const changeType = body.changeType || "new_hours";
 
-    for (const h of hours) {
-      const prefix = dayKeys.find((k) =>
-        h.day.toLowerCase().startsWith(k.toLowerCase())
-      );
-      if (prefix) {
-        hoursFlat[`${prefix}_Start`] = h.startTime;
-        hoursFlat[`${prefix}_End`] = h.endTime;
+    const hoursFlat: Record<string, string> = {};
+    if (changeType === "new_hours" && body.hours) {
+      const dayKeys = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const hours = body.hours as { day: string; startTime: string; endTime: string }[];
+
+      for (const h of hours) {
+        const prefix = dayKeys.find((k) =>
+          h.day.toLowerCase().startsWith(k.toLowerCase())
+        );
+        if (prefix) {
+          hoursFlat[`${prefix}_Start`] = h.startTime;
+          hoursFlat[`${prefix}_End`] = h.endTime;
+        }
       }
     }
 
-    const payload = {
+    const payload: Record<string, unknown> = {
       id: body.id,
       storeName: Array.isArray(body.storeName) ? body.storeName.join(", ") : body.storeName,
       managerName: body.managerName,
       managerEmail: body.managerEmail,
+      changeType,
       ...hoursFlat,
     };
+
+    if (changeType === "temporary_close") {
+      payload.changeDate = body.changeDate;
+      payload.changeNote = body.changeNote;
+    }
+
+    if (changeType === "holiday_hours" && body.holidays) {
+      payload.holidays = JSON.stringify(body.holidays);
+    }
 
     const response = await fetch(flowUrl, {
       method: "POST",

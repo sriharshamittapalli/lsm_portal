@@ -79,6 +79,7 @@ export function StoreHoursChanges() {
               <TableRow>
                 <TableHead>ID</TableHead>
                 <TableHead>Store Name</TableHead>
+                <TableHead>Change Type</TableHead>
                 <TableHead>Submitted</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -89,6 +90,13 @@ export function StoreHoursChanges() {
                 <TableRow key={change.id}>
                   <TableCell className="font-medium">{change.id}</TableCell>
                   <TableCell>{Array.isArray(change.storeName) ? change.storeName.join(", ") : change.storeName}</TableCell>
+                  <TableCell>
+                    {change.changeType === "temporary_close"
+                      ? "Temporary Close"
+                      : change.changeType === "holiday_hours"
+                        ? "Holiday Hours"
+                        : "New Store Hours"}
+                  </TableCell>
                   <TableCell>{change.submittedDate}</TableCell>
                   <TableCell>
                     <Badge
