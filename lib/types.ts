@@ -22,7 +22,7 @@ export interface DayHours {
 
 export interface StoreHoursChange {
   id: string;
-  storeName: string;
+  storeName: string | string[];
   managerName: string;
   managerEmail: string;
   hours: DayHours[];

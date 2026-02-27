@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     const payload = {
       id: body.id,
-      storeName: body.storeName,
+      storeName: Array.isArray(body.storeName) ? body.storeName.join(", ") : body.storeName,
       managerName: body.managerName,
       managerEmail: body.managerEmail,
       ...hoursFlat,

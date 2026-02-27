@@ -11,13 +11,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Check, ChevronsUpDown, X } from "lucide-react";
 import { StoreHoursChange, DayHours } from "@/lib/types";
 import { saveStoreHoursChange } from "@/lib/store";
 import { STORES } from "@/lib/stores";
@@ -54,12 +62,25 @@ export function StoreHoursFormModal({
   onOpenChange,
   onChangeCreated,
 }: StoreHoursFormModalProps) {
-  const [storeName, setStoreName] = useState("");
+  const [selectedStores, setSelectedStores] = useState<string[]>([]);
+  const [storePopoverOpen, setStorePopoverOpen] = useState(false);
   const [managerName, setManagerName] = useState("");
   const [managerEmail, setManagerEmail] = useState("");
   const [hours, setHours] = useState<DayHours[]>(makeDefaultHours);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+
+  function toggleStore(store: string) {
+    setSelectedStores((prev) =>
+      prev.includes(store)
+        ? prev.filter((s) => s !== store)
+        : [...prev, store]
+    );
+  }
+
+  function removeStore(store: string) {
+    setSelectedStores((prev) => prev.filter((s) => s !== store));
+  }
 
   function updateHour(index: number, field: "startTime" | "endTime", value: string) {
     setHours((prev) => prev.map((h, i) => (i === index ? { ...h, [field]: value } : h)));
@@ -67,7 +88,7 @@ export function StoreHoursFormModal({
 
   function validate() {
     const errs: Record<string, string> = {};
-    if (!storeName.trim()) errs.storeName = "Store name is required";
+    if (selectedStores.length === 0) errs.storeName = "At least one store is required";
     if (!managerName.trim()) errs.managerName = "Manager name is required";
     if (!managerEmail.trim()) errs.managerEmail = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(managerEmail))
@@ -94,7 +115,7 @@ export function StoreHoursFormModal({
 
     const change: StoreHoursChange = {
       id: changeId,
-      storeName,
+      storeName: selectedStores,
       managerName,
       managerEmail,
       hours,
@@ -108,7 +129,7 @@ export function StoreHoursFormModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: changeId,
-          storeName,
+          storeName: selectedStores,
           managerName,
           managerEmail,
           hours,
@@ -135,7 +156,7 @@ export function StoreHoursFormModal({
   }
 
   function resetForm() {
-    setStoreName("");
+    setSelectedStores([]);
     setManagerName("");
     setManagerEmail("");
     setHours(makeDefaultHours());
@@ -157,21 +178,64 @@ export function StoreHoursFormModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="shc-storeName">
+            <Label>
               Store Name <span className="text-destructive">*</span>
             </Label>
-            <Select value={storeName} onValueChange={setStoreName}>
-              <SelectTrigger id="shc-storeName" className="w-full">
-                <SelectValue placeholder="Select a store" />
-              </SelectTrigger>
-              <SelectContent>
-                {STORES.map((store) => (
-                  <SelectItem key={store} value={store}>
+            <Popover open={storePopoverOpen} onOpenChange={setStorePopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={storePopoverOpen}
+                  className="w-full justify-between font-normal"
+                >
+                  {selectedStores.length === 0
+                    ? "Select stores..."
+                    : `${selectedStores.length} store${selectedStores.length > 1 ? "s" : ""} selected`}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="Search stores..." />
+                  <CommandList>
+                    <CommandEmpty>No store found.</CommandEmpty>
+                    <CommandGroup>
+                      {STORES.map((store) => (
+                        <CommandItem
+                          key={store}
+                          value={store}
+                          onSelect={() => toggleStore(store)}
+                        >
+                          <div className={`mr-2 flex h-4 w-4 items-center justify-center rounded-sm border ${selectedStores.includes(store) ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground/30"}`}>
+                            {selectedStores.includes(store) && (
+                              <Check className="h-3 w-3" />
+                            )}
+                          </div>
+                          {store}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            {selectedStores.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {selectedStores.map((store) => (
+                  <Badge key={store} variant="secondary" className="gap-1 pr-1">
                     {store}
-                  </SelectItem>
+                    <button
+                      type="button"
+                      className="ml-0.5 rounded-full p-0.5 hover:bg-muted-foreground/20"
+                      onClick={() => removeStore(store)}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
                 ))}
-              </SelectContent>
-            </Select>
+              </div>
+            )}
             {errors.storeName && (
               <p className="text-sm text-destructive">{errors.storeName}</p>
             )}

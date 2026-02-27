@@ -72,7 +72,7 @@ export function StoreHoursDetailsModal({
         <Separator />
 
         <div className="space-y-0 divide-y">
-          <DetailRow label="Store Name" value={change.storeName} />
+          <DetailRow label="Store Name" value={Array.isArray(change.storeName) ? change.storeName.join(", ") : change.storeName} />
           <DetailRow label="Manager" value={change.managerName} />
           <DetailRow label="Email" value={change.managerEmail} />
           <DetailRow label="Submitted" value={change.submittedDate} />
