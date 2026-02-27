@@ -11,8 +11,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { StoreHoursChange, DayHours } from "@/lib/types";
 import { saveStoreHoursChange } from "@/lib/store";
+import { STORES } from "@/lib/stores";
 
 const DAYS = [
   "Sunday",
@@ -152,12 +160,18 @@ export function StoreHoursFormModal({
             <Label htmlFor="shc-storeName">
               Store Name <span className="text-destructive">*</span>
             </Label>
-            <Input
-              id="shc-storeName"
-              value={storeName}
-              onChange={(e) => setStoreName(e.target.value)}
-              placeholder="e.g. Yogurtland - Downtown LA"
-            />
+            <Select value={storeName} onValueChange={setStoreName}>
+              <SelectTrigger id="shc-storeName" className="w-full">
+                <SelectValue placeholder="Select a store" />
+              </SelectTrigger>
+              <SelectContent>
+                {STORES.map((store) => (
+                  <SelectItem key={store} value={store}>
+                    {store}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {errors.storeName && (
               <p className="text-sm text-destructive">{errors.storeName}</p>
             )}
