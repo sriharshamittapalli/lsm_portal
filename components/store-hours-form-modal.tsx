@@ -71,7 +71,7 @@ export function StoreHoursFormModal({
   const [hours, setHours] = useState<DayHours[]>(makeDefaultHours);
   const [closeDate, setCloseDate] = useState("");
   const [closeReason, setCloseReason] = useState("");
-  const [holidays, setHolidays] = useState<HolidayEntry[]>([{ date: "", name: "" }]);
+  const [holidays, setHolidays] = useState<HolidayEntry[]>([{ date: "", name: "", startTime: "", endTime: "" }]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -92,14 +92,14 @@ export function StoreHoursFormModal({
   }
 
   function addHoliday() {
-    setHolidays((prev) => [...prev, { date: "", name: "" }]);
+    setHolidays((prev) => [...prev, { date: "", name: "", startTime: "", endTime: "" }]);
   }
 
   function removeHoliday(index: number) {
     setHolidays((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function updateHoliday(index: number, field: "date" | "name", value: string) {
+  function updateHoliday(index: number, field: "date" | "name" | "startTime" | "endTime", value: string) {
     setHolidays((prev) => prev.map((h, i) => (i === index ? { ...h, [field]: value } : h)));
   }
 
@@ -125,6 +125,10 @@ export function StoreHoursFormModal({
       holidays.forEach((h, i) => {
         if (!h.date) errs[`holiday-date-${i}`] = "Date is required";
         if (!h.name.trim()) errs[`holiday-name-${i}`] = "Holiday name is required";
+        if (!h.startTime) errs[`holiday-start-${i}`] = "Required";
+        if (!h.endTime) errs[`holiday-end-${i}`] = "Required";
+        if (h.startTime && h.endTime && h.endTime <= h.startTime)
+          errs[`holiday-end-${i}`] = "Must be after start";
       });
     }
 
@@ -199,7 +203,7 @@ export function StoreHoursFormModal({
     setHours(makeDefaultHours());
     setCloseDate("");
     setCloseReason("");
-    setHolidays([{ date: "", name: "" }]);
+    setHolidays([{ date: "", name: "", startTime: "", endTime: "" }]);
     setErrors({});
   }
 
@@ -424,41 +428,70 @@ export function StoreHoursFormModal({
               <Label>
                 Holidays <span className="text-destructive">*</span>
               </Label>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {holidays.map((h, i) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <div className="flex-1 space-y-1">
-                      <Input
-                        type="date"
-                        value={h.date}
-                        onChange={(e) => updateHoliday(i, "date", e.target.value)}
-                        placeholder="Date"
-                      />
-                      {errors[`holiday-date-${i}`] && (
-                        <p className="text-xs text-destructive">{errors[`holiday-date-${i}`]}</p>
+                  <div key={i} className="rounded-lg border p-3 space-y-2">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1 space-y-1">
+                        <Label className="text-xs text-muted-foreground">Date</Label>
+                        <Input
+                          type="date"
+                          value={h.date}
+                          onChange={(e) => updateHoliday(i, "date", e.target.value)}
+                        />
+                        {errors[`holiday-date-${i}`] && (
+                          <p className="text-xs text-destructive">{errors[`holiday-date-${i}`]}</p>
+                        )}
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <Label className="text-xs text-muted-foreground">Holiday Name</Label>
+                        <Input
+                          value={h.name}
+                          onChange={(e) => updateHoliday(i, "name", e.target.value)}
+                          placeholder="e.g. Christmas Day"
+                        />
+                        {errors[`holiday-name-${i}`] && (
+                          <p className="text-xs text-destructive">{errors[`holiday-name-${i}`]}</p>
+                        )}
+                      </div>
+                      {holidays.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="mt-5 shrink-0"
+                          onClick={() => removeHoliday(i)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       )}
                     </div>
-                    <div className="flex-1 space-y-1">
-                      <Input
-                        value={h.name}
-                        onChange={(e) => updateHoliday(i, "name", e.target.value)}
-                        placeholder="Holiday name"
-                      />
-                      {errors[`holiday-name-${i}`] && (
-                        <p className="text-xs text-destructive">{errors[`holiday-name-${i}`]}</p>
-                      )}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Start Time</Label>
+                        <Input
+                          type="time"
+                          value={h.startTime}
+                          onChange={(e) => updateHoliday(i, "startTime", e.target.value)}
+                          className="h-8"
+                        />
+                        {errors[`holiday-start-${i}`] && (
+                          <p className="text-xs text-destructive">{errors[`holiday-start-${i}`]}</p>
+                        )}
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">End Time</Label>
+                        <Input
+                          type="time"
+                          value={h.endTime}
+                          onChange={(e) => updateHoliday(i, "endTime", e.target.value)}
+                          className="h-8"
+                        />
+                        {errors[`holiday-end-${i}`] && (
+                          <p className="text-xs text-destructive">{errors[`holiday-end-${i}`]}</p>
+                        )}
+                      </div>
                     </div>
-                    {holidays.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="mt-0.5 shrink-0"
-                        onClick={() => removeHoliday(i)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
                   </div>
                 ))}
               </div>

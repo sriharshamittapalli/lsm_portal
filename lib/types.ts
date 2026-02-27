@@ -23,6 +23,8 @@ export interface DayHours {
 export interface HolidayEntry {
   date: string;
   name: string;
+  startTime: string;
+  endTime: string;
 }
 
 export interface StoreHoursChange {

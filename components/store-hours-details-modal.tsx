@@ -124,17 +124,21 @@ export function StoreHoursDetailsModal({
           <div className="space-y-2">
             <h4 className="text-sm font-semibold text-foreground">Holidays</h4>
             <div className="rounded-lg border">
-              <div className="grid grid-cols-2 gap-2 border-b bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground">
+              <div className="grid grid-cols-4 gap-2 border-b bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground">
                 <span>Date</span>
                 <span>Holiday Name</span>
+                <span>Start Time</span>
+                <span>End Time</span>
               </div>
               {change.holidays.map((h, i) => (
                 <div
                   key={i}
-                  className="grid grid-cols-2 gap-2 border-b px-3 py-1.5 last:border-b-0"
+                  className="grid grid-cols-4 gap-2 border-b px-3 py-1.5 last:border-b-0"
                 >
                   <span className="text-sm">{h.date}</span>
                   <span className="text-sm">{h.name}</span>
+                  <span className="text-sm">{h.startTime}</span>
+                  <span className="text-sm">{h.endTime}</span>
                 </div>
               ))}
             </div>
