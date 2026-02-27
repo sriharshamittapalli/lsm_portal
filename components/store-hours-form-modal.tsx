@@ -17,15 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Check, ChevronsUpDown, X } from "lucide-react";
+import { Check, ChevronsUpDown, X, Search } from "lucide-react";
 import { StoreHoursChange, DayHours } from "@/lib/types";
 import { saveStoreHoursChange } from "@/lib/store";
 import { STORES } from "@/lib/stores";
@@ -64,6 +56,7 @@ export function StoreHoursFormModal({
 }: StoreHoursFormModalProps) {
   const [selectedStores, setSelectedStores] = useState<string[]>([]);
   const [storePopoverOpen, setStorePopoverOpen] = useState(false);
+  const [storeSearch, setStoreSearch] = useState("");
   const [managerName, setManagerName] = useState("");
   const [managerEmail, setManagerEmail] = useState("");
   const [hours, setHours] = useState<DayHours[]>(makeDefaultHours);
@@ -157,6 +150,7 @@ export function StoreHoursFormModal({
 
   function resetForm() {
     setSelectedStores([]);
+    setStoreSearch("");
     setManagerName("");
     setManagerEmail("");
     setHours(makeDefaultHours());
@@ -196,28 +190,39 @@ export function StoreHoursFormModal({
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                <Command>
-                  <CommandInput placeholder="Search stores..." />
-                  <CommandList>
-                    <CommandEmpty>No store found.</CommandEmpty>
-                    <CommandGroup>
-                      {STORES.map((store) => (
-                        <CommandItem
-                          key={store}
-                          value={store}
-                          onSelect={() => toggleStore(store)}
-                        >
-                          <div className={`mr-2 flex h-4 w-4 items-center justify-center rounded-sm border ${selectedStores.includes(store) ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground/30"}`}>
-                            {selectedStores.includes(store) && (
-                              <Check className="h-3 w-3" />
-                            )}
-                          </div>
-                          {store}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
+                <div className="flex items-center gap-2 border-b px-3 py-2">
+                  <Search className="h-4 w-4 shrink-0 opacity-50" />
+                  <input
+                    className="flex h-8 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                    placeholder="Search stores..."
+                    value={storeSearch}
+                    onChange={(e) => setStoreSearch(e.target.value)}
+                  />
+                </div>
+                <div className="max-h-[300px] overflow-y-auto p-1">
+                  {STORES.filter((s) =>
+                    s.toLowerCase().includes(storeSearch.toLowerCase())
+                  ).map((store) => (
+                    <button
+                      key={store}
+                      type="button"
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                      onClick={() => toggleStore(store)}
+                    >
+                      <div className={`flex h-4 w-4 items-center justify-center rounded-sm border ${selectedStores.includes(store) ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground/30"}`}>
+                        {selectedStores.includes(store) && (
+                          <Check className="h-3 w-3" />
+                        )}
+                      </div>
+                      {store}
+                    </button>
+                  ))}
+                  {STORES.filter((s) =>
+                    s.toLowerCase().includes(storeSearch.toLowerCase())
+                  ).length === 0 && (
+                    <p className="py-6 text-center text-sm text-muted-foreground">No store found.</p>
+                  )}
+                </div>
               </PopoverContent>
             </Popover>
             {selectedStores.length > 0 && (
