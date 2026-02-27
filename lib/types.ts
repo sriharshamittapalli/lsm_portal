@@ -43,10 +43,12 @@ export interface StoreHoursChange {
 
 export interface PriceChange {
   id: string;
-  storeName: string;
+  storeName: string | string[];
   managerName: string;
   managerEmail: string;
   priceChangeRequest: string;
+  effectiveDate: string;
+  popNeeded: string;
   description: string;
   currentPrice: string;
   updatedPrice: string;
@@ -57,7 +59,7 @@ export interface PriceChange {
 export interface LsmRequest {
   id: string;
   requestDate: string;
-  storeLocation: string;
+  storeLocation: string | string[];
   contactName: string;
   contactEmail: string;
   contactPhone: string;

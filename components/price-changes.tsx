@@ -90,7 +90,7 @@ export function PriceChanges() {
               {changes.map((change) => (
                 <TableRow key={change.id}>
                   <TableCell className="font-medium">{change.id}</TableCell>
-                  <TableCell>{change.storeName}</TableCell>
+                  <TableCell>{Array.isArray(change.storeName) ? change.storeName.join(", ") : change.storeName}</TableCell>
                   <TableCell>${change.currentPrice}</TableCell>
                   <TableCell>${change.updatedPrice}</TableCell>
                   <TableCell>{change.submittedDate}</TableCell>

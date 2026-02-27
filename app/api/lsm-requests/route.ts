@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     const payload = {
       id: body.id,
       requestDate: body.requestDate,
-      storeLocation: body.storeLocation,
+      storeLocation: Array.isArray(body.storeLocation) ? body.storeLocation.join(", ") : body.storeLocation,
       contactName: body.contactName,
       contactEmail: body.contactEmail,
       contactPhone: body.contactPhone || "",

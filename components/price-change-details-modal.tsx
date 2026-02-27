@@ -72,10 +72,12 @@ export function PriceChangeDetailsModal({
         <Separator />
 
         <div className="space-y-0 divide-y">
-          <DetailRow label="Store Name" value={change.storeName} />
+          <DetailRow label="Store Name" value={Array.isArray(change.storeName) ? change.storeName.join(", ") : change.storeName} />
           <DetailRow label="Manager" value={change.managerName} />
           <DetailRow label="Email" value={change.managerEmail} />
           <DetailRow label="Request Type" value={change.priceChangeRequest} />
+          <DetailRow label="Effective Date" value={change.effectiveDate} />
+          <DetailRow label="POP Needed" value={change.popNeeded} />
           <DetailRow label="Description" value={change.description} />
           <DetailRow label="Current Price" value={`$${change.currentPrice}`} />
           <DetailRow label="Updated Price" value={`$${change.updatedPrice}`} />

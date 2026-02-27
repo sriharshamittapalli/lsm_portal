@@ -11,10 +11,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
+import { Check, ChevronsUpDown, X, Search } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LsmRequest } from "@/lib/types";
 import { saveLsmRequest } from "@/lib/store";
+import { STORES } from "@/lib/stores";
 
 interface LsmRequestFormModalProps {
   open: boolean;
@@ -47,7 +55,9 @@ export function LsmRequestFormModal({
   open,
   onOpenChange,
 }: LsmRequestFormModalProps) {
-  const [storeLocation, setStoreLocation] = useState("");
+  const [selectedStores, setSelectedStores] = useState<string[]>([]);
+  const [storePopoverOpen, setStorePopoverOpen] = useState(false);
+  const [storeSearch, setStoreSearch] = useState("");
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
@@ -81,9 +91,21 @@ export function LsmRequestFormModal({
     );
   }
 
+  function toggleStore(store: string) {
+    setSelectedStores((prev) =>
+      prev.includes(store)
+        ? prev.filter((s) => s !== store)
+        : [...prev, store]
+    );
+  }
+
+  function removeStore(store: string) {
+    setSelectedStores((prev) => prev.filter((s) => s !== store));
+  }
+
   function validate() {
     const errs: Record<string, string> = {};
-    if (!storeLocation.trim()) errs.storeLocation = "Store location is required";
+    if (selectedStores.length === 0) errs.storeLocation = "Store location is required";
     if (!contactName.trim()) errs.contactName = "Contact name is required";
     if (!contactEmail.trim()) errs.contactEmail = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail))
@@ -107,7 +129,7 @@ export function LsmRequestFormModal({
     const request: LsmRequest = {
       id: requestId,
       requestDate,
-      storeLocation,
+      storeLocation: selectedStores.join(", "),
       contactName,
       contactEmail,
       contactPhone,
@@ -164,7 +186,9 @@ export function LsmRequestFormModal({
   }
 
   function resetForm() {
-    setStoreLocation("");
+    setSelectedStores([]);
+    setStorePopoverOpen(false);
+    setStoreSearch("");
     setContactName("");
     setContactEmail("");
     setContactPhone("");
@@ -196,7 +220,7 @@ export function LsmRequestFormModal({
     >
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>LSM Request Form</DialogTitle>
+          <DialogTitle>Custom Design Request</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -205,30 +229,88 @@ export function LsmRequestFormModal({
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               Contact Information
             </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="lsm-requestDate">Request Date</Label>
-                <Input
-                  id="lsm-requestDate"
-                  value={new Date().toLocaleDateString("en-US")}
-                  readOnly
-                  className="bg-muted"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lsm-storeLocation">
-                  Store #/Location <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="lsm-storeLocation"
-                  value={storeLocation}
-                  onChange={(e) => setStoreLocation(e.target.value)}
-                  placeholder="e.g. #1234 - Downtown LA"
-                />
-                {errors.storeLocation && (
-                  <p className="text-sm text-destructive">{errors.storeLocation}</p>
-                )}
-              </div>
+            <div className="space-y-2">
+              <Label>
+                Store #/Location <span className="text-destructive">*</span>
+              </Label>
+              <Popover open={storePopoverOpen} onOpenChange={setStorePopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={storePopoverOpen}
+                    className="w-full justify-between font-normal"
+                  >
+                    {selectedStores.length === 0
+                      ? "Select stores..."
+                      : `${selectedStores.length} store${selectedStores.length > 1 ? "s" : ""} selected`}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <div className="flex items-center gap-2 border-b px-3 py-2">
+                    <Search className="h-4 w-4 shrink-0 opacity-50" />
+                    <input
+                      className="flex h-8 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                      placeholder="Search stores..."
+                      value={storeSearch}
+                      onChange={(e) => setStoreSearch(e.target.value)}
+                    />
+                  </div>
+                  <div className="max-h-[300px] overflow-y-auto p-1">
+                    {STORES.filter((s) =>
+                      s.toLowerCase().includes(storeSearch.toLowerCase())
+                    ).map((store) => (
+                      <button
+                        key={store}
+                        type="button"
+                        className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                        onClick={() => toggleStore(store)}
+                      >
+                        <div className={`flex h-4 w-4 items-center justify-center rounded-sm border ${selectedStores.includes(store) ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground/30"}`}>
+                          {selectedStores.includes(store) && (
+                            <Check className="h-3 w-3" />
+                          )}
+                        </div>
+                        {store}
+                      </button>
+                    ))}
+                    {STORES.filter((s) =>
+                      s.toLowerCase().includes(storeSearch.toLowerCase())
+                    ).length === 0 && (
+                      <p className="py-6 text-center text-sm text-muted-foreground">No store found.</p>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              {selectedStores.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {selectedStores.map((store) => (
+                    <Badge key={store} variant="secondary" className="gap-1 pr-1">
+                      {store}
+                      <button
+                        type="button"
+                        className="ml-0.5 rounded-full p-0.5 hover:bg-muted-foreground/20"
+                        onClick={() => removeStore(store)}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              {errors.storeLocation && (
+                <p className="text-sm text-destructive">{errors.storeLocation}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="lsm-requestDate">Request Date</Label>
+              <Input
+                id="lsm-requestDate"
+                value={new Date().toLocaleDateString("en-US")}
+                readOnly
+                className="bg-muted"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="lsm-contactName">
