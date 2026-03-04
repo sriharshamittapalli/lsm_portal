@@ -5,7 +5,7 @@ import { DesignRequests } from "@/components/design-requests";
 import { StoreHoursChanges } from "@/components/store-hours-changes";
 import { PriceChanges } from "@/components/price-changes";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Palette, BookOpen, FolderOpen, Clock, DollarSign, ClipboardList, Loader2 } from "lucide-react";
+import { Palette, BookOpen, FolderOpen, Clock, DollarSign, ClipboardList, Loader2, ShoppingBag, ExternalLink } from "lucide-react";
 import { useState } from "react";
 
 export default function Home() {
@@ -42,6 +42,10 @@ export default function Home() {
               <TabsTrigger value="evergreen-order-form">
                 <ClipboardList className="mr-2 h-4 w-4" />
                 Evergreen Order Form
+              </TabsTrigger>
+              <TabsTrigger value="uniforms-catering-bags">
+                <ShoppingBag className="mr-2 h-4 w-4" />
+                Uniforms &amp; Catering Bags
               </TabsTrigger>
             </TabsList>
 
@@ -96,6 +100,26 @@ export default function Home() {
                   title="Evergreen Order Form"
                   onLoad={() => setIframeLoaded(true)}
                 />
+              </div>
+            </TabsContent>
+            <TabsContent value="uniforms-catering-bags">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-20 gap-4">
+                <ShoppingBag className="h-12 w-12 text-muted-foreground/50" />
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold">Uniforms &amp; Catering Bags</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Order uniforms and catering bags through the Yogurtland Crew store.
+                  </p>
+                </div>
+                <a
+                  href="https://yogurtlandcrew.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 transition-colors"
+                >
+                  Go to Yogurtland Crew Store
+                  <ExternalLink className="h-4 w-4" />
+                </a>
               </div>
             </TabsContent>
           </Tabs>
