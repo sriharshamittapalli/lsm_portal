@@ -587,6 +587,16 @@ export function LsmRequestFormModal({
             />
           </div>
 
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 space-y-1">
+            <p className="text-sm font-semibold text-amber-900">Updated Disclaimer Notes</p>
+            <ul className="text-sm text-amber-900 list-disc list-inside space-y-1">
+              <li>Please allow 5-7 business days for the design process.</li>
+              <li>YLSC reserves the right to have final say on brand look and feel.</li>
+              <li>Any YL artwork or logo(s) cannot be used in any type of print, social media posts, other media, etc without the permission of the marketing dept.</li>
+              <li>Any questions, please contact <a href="mailto:marketingdept@yogurtland.com" className="underline">marketingdept@yogurtland.com</a></li>
+            </ul>
+          </div>
+
           <DialogFooter>
             <Button
               type="button"
