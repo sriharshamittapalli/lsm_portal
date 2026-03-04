@@ -69,6 +69,7 @@ export function StoreHoursFormModal({
   const [managerEmail, setManagerEmail] = useState("");
   const [changeType, setChangeType] = useState<"new_hours" | "temporary_close" | "holiday_hours">("new_hours");
   const [hours, setHours] = useState<DayHours[]>(makeDefaultHours);
+  const [effectiveDate, setEffectiveDate] = useState("");
   const [closeStartDate, setCloseStartDate] = useState("");
   const [closeEndDate, setCloseEndDate] = useState("");
   const [closeReason, setCloseReason] = useState("");
@@ -113,6 +114,7 @@ export function StoreHoursFormModal({
       errs.managerEmail = "Invalid email address";
 
     if (changeType === "new_hours") {
+      if (!effectiveDate) errs.effectiveDate = "Effective date is required";
       hours.forEach((h, i) => {
         if (!h.startTime) errs[`start-${i}`] = "Required";
         if (!h.endTime) errs[`end-${i}`] = "Required";
@@ -155,6 +157,7 @@ export function StoreHoursFormModal({
       managerEmail,
       changeType,
       hours: changeType === "new_hours" ? hours : [],
+      effectiveDate: changeType === "new_hours" ? effectiveDate : undefined,
       changeDate: changeType === "temporary_close" ? closeStartDate : undefined,
       changeEndDate: changeType === "temporary_close" ? closeEndDate : undefined,
       changeNote: changeType === "temporary_close" ? closeReason : undefined,
@@ -174,6 +177,7 @@ export function StoreHoursFormModal({
           managerEmail,
           changeType,
           hours: changeType === "new_hours" ? hours : undefined,
+          effectiveDate: changeType === "new_hours" ? effectiveDate : undefined,
           changeDate: changeType === "temporary_close" ? closeStartDate : undefined,
           changeEndDate: changeType === "temporary_close" ? closeEndDate : undefined,
           changeNote: changeType === "temporary_close" ? closeReason : undefined,
@@ -207,6 +211,7 @@ export function StoreHoursFormModal({
     setManagerEmail("");
     setChangeType("new_hours");
     setHours(makeDefaultHours());
+    setEffectiveDate("");
     setCloseStartDate("");
     setCloseEndDate("");
     setCloseReason("");
@@ -352,7 +357,22 @@ export function StoreHoursFormModal({
           </div>
 
           {changeType === "new_hours" && (
-            <div className="space-y-2">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="shc-effectiveDate">
+                  Effective Date <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="shc-effectiveDate"
+                  type="date"
+                  value={effectiveDate}
+                  onChange={(e) => setEffectiveDate(e.target.value)}
+                />
+                {errors.effectiveDate && (
+                  <p className="text-sm text-destructive">{errors.effectiveDate}</p>
+                )}
+              </div>
+              <div className="space-y-2">
               <Label>
                 Weekly Hours <span className="text-destructive">*</span>
               </Label>
@@ -394,6 +414,7 @@ export function StoreHoursFormModal({
                 ))}
               </div>
             </div>
+              </div>
           )}
 
           {changeType === "temporary_close" && (

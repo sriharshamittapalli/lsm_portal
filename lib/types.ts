@@ -34,6 +34,7 @@ export interface StoreHoursChange {
   managerEmail: string;
   changeType?: "new_hours" | "temporary_close" | "holiday_hours";
   hours: DayHours[];
+  effectiveDate?: string;
   changeDate?: string;
   changeEndDate?: string;
   changeNote?: string;
