@@ -9,16 +9,17 @@ export function Header() {
   return (
     <header className="border-b bg-primary text-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
-        <div className="flex flex-col items-start">
+        <div className="flex items-center gap-3">
           <Image
-            src="/logo-yogurtland.svg"
+            src="/yogurt-icon.png"
             alt="Yogurtland"
-            width={140}
-            height={40}
-            className="h-8 w-auto brightness-0 invert sm:h-10"
+            width={56}
+            height={56}
+            className="h-12 w-12 sm:h-14 sm:w-14"
+            style={{ mixBlendMode: "screen", filter: "contrast(10)" }}
             priority
           />
-          <p className="mt-1 text-xs text-white/80 sm:text-sm">
+          <p className="text-xs text-white/80 sm:text-sm">
             Local Store Marketing Portal
           </p>
         </div>
