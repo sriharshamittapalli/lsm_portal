@@ -546,6 +546,14 @@ export function StoreHoursFormModal({
             </div>
           )}
 
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 space-y-1">
+            <p className="text-sm font-semibold text-amber-900">Notes</p>
+            <ul className="text-sm text-amber-900 list-disc list-inside space-y-1">
+              <li>Store hours requests will take up to 24-48 hours from submitted date during regular business hours M-F 8:00-5pm (CT) excluding holidays.</li>
+              <li>Holiday hours should be submitted at least 5 days prior to effective day to ensure timing reflects on Google and other platforms.</li>
+            </ul>
+          </div>
+
           <DialogFooter>
             <Button
               type="button"
