@@ -18,9 +18,17 @@ export function Header() {
             className="h-12 w-12 sm:h-14 sm:w-14"
             priority
           />
-          <p className="text-xs text-white/80 sm:text-sm">
-            Local Store Marketing Portal
-          </p>
+          <div className="flex flex-col gap-0.5 items-start">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-yogurtland.svg"
+              alt="Yogurtland"
+              className="h-7 sm:h-9 w-auto block brightness-0 invert"
+            />
+            <p className="text-xs text-white/80 sm:text-sm">
+              Local Store Marketing
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4">

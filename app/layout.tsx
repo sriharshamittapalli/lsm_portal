@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yogurtland - Local Store Marketing Portal",
+  title: "Yogurtland - Local Store Marketing",
   description: "Submit and track marketing design requests for your Yogurtland store",
 };
 
