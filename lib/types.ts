@@ -35,6 +35,7 @@ export interface StoreHoursChange {
   changeType?: "new_hours" | "temporary_close" | "holiday_hours";
   hours: DayHours[];
   changeDate?: string;
+  changeEndDate?: string;
   changeNote?: string;
   holidays?: HolidayEntry[];
   submittedDate: string;
@@ -66,6 +67,7 @@ export interface LsmRequest {
   lsmTypes: string[];
   desiredMessage: string;
   couponOffers: string;
+  couponCode: string;
   couponExpirationDate: string;
   specialInstructions: string;
   sizeWidth: string;

@@ -64,6 +64,7 @@ export function LsmRequestFormModal({
   const [lsmTypes, setLsmTypes] = useState<string[]>([]);
   const [desiredMessage, setDesiredMessage] = useState("");
   const [couponOffers, setCouponOffers] = useState("");
+  const [couponCode, setCouponCode] = useState("");
   const [couponExpirationDate, setCouponExpirationDate] = useState("");
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [sizeWidth, setSizeWidth] = useState("");
@@ -136,6 +137,7 @@ export function LsmRequestFormModal({
       lsmTypes,
       desiredMessage,
       couponOffers,
+      couponCode,
       couponExpirationDate: couponExpirationDate
         ? new Date(couponExpirationDate).toLocaleDateString("en-US")
         : "",
@@ -195,6 +197,7 @@ export function LsmRequestFormModal({
     setLsmTypes([]);
     setDesiredMessage("");
     setCouponOffers("");
+    setCouponCode("");
     setCouponExpirationDate("");
     setSpecialInstructions("");
     setSizeWidth("");
@@ -427,6 +430,18 @@ export function LsmRequestFormModal({
                   onChange={(e) => setCouponExpirationDate(e.target.value)}
                 />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="lsm-couponCode">Coupon Code</Label>
+              <Input
+                id="lsm-couponCode"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                placeholder="e.g. SUMMER25"
+              />
+              <p className="text-xs text-muted-foreground">
+                Code to help tracking of coupons.
+              </p>
             </div>
             <p className="text-xs text-muted-foreground">
               Note: If coupon needs a unique code, please submit a separate Portal Request.

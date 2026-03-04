@@ -69,7 +69,8 @@ export function StoreHoursFormModal({
   const [managerEmail, setManagerEmail] = useState("");
   const [changeType, setChangeType] = useState<"new_hours" | "temporary_close" | "holiday_hours">("new_hours");
   const [hours, setHours] = useState<DayHours[]>(makeDefaultHours);
-  const [closeDate, setCloseDate] = useState("");
+  const [closeStartDate, setCloseStartDate] = useState("");
+  const [closeEndDate, setCloseEndDate] = useState("");
   const [closeReason, setCloseReason] = useState("");
   const [holidays, setHolidays] = useState<HolidayEntry[]>([{ date: "", name: "", startTime: "", endTime: "" }]);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -119,7 +120,10 @@ export function StoreHoursFormModal({
           errs[`end-${i}`] = "Must be after start";
       });
     } else if (changeType === "temporary_close") {
-      if (!closeDate) errs.closeDate = "Date is required";
+      if (!closeStartDate) errs.closeStartDate = "Start date is required";
+      if (!closeEndDate) errs.closeEndDate = "End date is required";
+      if (closeStartDate && closeEndDate && closeEndDate < closeStartDate)
+        errs.closeEndDate = "End date must be after start date";
       if (!closeReason.trim()) errs.closeReason = "Reason is required";
     } else if (changeType === "holiday_hours") {
       holidays.forEach((h, i) => {
@@ -151,7 +155,8 @@ export function StoreHoursFormModal({
       managerEmail,
       changeType,
       hours: changeType === "new_hours" ? hours : [],
-      changeDate: changeType === "temporary_close" ? closeDate : undefined,
+      changeDate: changeType === "temporary_close" ? closeStartDate : undefined,
+      changeEndDate: changeType === "temporary_close" ? closeEndDate : undefined,
       changeNote: changeType === "temporary_close" ? closeReason : undefined,
       holidays: changeType === "holiday_hours" ? holidays : undefined,
       submittedDate: new Date().toLocaleDateString("en-US"),
@@ -169,7 +174,8 @@ export function StoreHoursFormModal({
           managerEmail,
           changeType,
           hours: changeType === "new_hours" ? hours : undefined,
-          changeDate: changeType === "temporary_close" ? closeDate : undefined,
+          changeDate: changeType === "temporary_close" ? closeStartDate : undefined,
+          changeEndDate: changeType === "temporary_close" ? closeEndDate : undefined,
           changeNote: changeType === "temporary_close" ? closeReason : undefined,
           holidays: changeType === "holiday_hours" ? holidays : undefined,
         }),
@@ -201,7 +207,8 @@ export function StoreHoursFormModal({
     setManagerEmail("");
     setChangeType("new_hours");
     setHours(makeDefaultHours());
-    setCloseDate("");
+    setCloseStartDate("");
+    setCloseEndDate("");
     setCloseReason("");
     setHolidays([{ date: "", name: "", startTime: "", endTime: "" }]);
     setErrors({});
@@ -391,19 +398,35 @@ export function StoreHoursFormModal({
 
           {changeType === "temporary_close" && (
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="shc-closeDate">
-                  Close Date <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="shc-closeDate"
-                  type="date"
-                  value={closeDate}
-                  onChange={(e) => setCloseDate(e.target.value)}
-                />
-                {errors.closeDate && (
-                  <p className="text-sm text-destructive">{errors.closeDate}</p>
-                )}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="shc-closeStartDate">
+                    Start Date <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="shc-closeStartDate"
+                    type="date"
+                    value={closeStartDate}
+                    onChange={(e) => setCloseStartDate(e.target.value)}
+                  />
+                  {errors.closeStartDate && (
+                    <p className="text-sm text-destructive">{errors.closeStartDate}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="shc-closeEndDate">
+                    End Date <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="shc-closeEndDate"
+                    type="date"
+                    value={closeEndDate}
+                    onChange={(e) => setCloseEndDate(e.target.value)}
+                  />
+                  {errors.closeEndDate && (
+                    <p className="text-sm text-destructive">{errors.closeEndDate}</p>
+                  )}
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="shc-closeReason">
