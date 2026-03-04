@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { RequestFormModal } from "@/components/request-form-modal";
 import { RequestDetailsModal } from "@/components/request-details-modal";
 import { JotFormModal } from "@/components/jotform-modal";
 import { LsmRequestFormModal } from "@/components/lsm-request-form-modal";
@@ -32,7 +31,6 @@ function statusClass(status: DesignRequest["status"]) {
 
 export function DesignRequests() {
   const [requests, setRequests] = useState<DesignRequest[]>([]);
-  const [formOpen, setFormOpen] = useState(false);
   const [jotFormOpen, setJotFormOpen] = useState(false);
   const [lsmFormOpen, setLsmFormOpen] = useState(false);
   const [detailsRequest, setDetailsRequest] = useState<DesignRequest | null>(
@@ -79,7 +77,7 @@ export function DesignRequests() {
           <p className="mb-4 text-sm text-muted-foreground">
             Click &quot;New Request&quot; to submit your first design request.
           </p>
-          <Button variant="outline" onClick={() => setFormOpen(true)}>
+          <Button variant="outline" onClick={() => setLsmFormOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             New Request
           </Button>
@@ -128,12 +126,6 @@ export function DesignRequests() {
           </Table>
         </div>
       )}
-
-      <RequestFormModal
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        onRequestCreated={handleRequestCreated}
-      />
 
       <RequestDetailsModal
         request={detailsRequest}
