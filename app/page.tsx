@@ -5,11 +5,20 @@ import { DesignRequests } from "@/components/design-requests";
 import { StoreHoursChanges } from "@/components/store-hours-changes";
 import { PriceChanges } from "@/components/price-changes";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Palette, BookOpen, FolderOpen, Clock, DollarSign, ClipboardList, Loader2, ShoppingBag, ExternalLink } from "lucide-react";
+import { Palette, BookOpen, Folder, FolderOpen, Clock, DollarSign, ClipboardList, Loader2, ShoppingBag, ExternalLink, UtensilsCrossed, GraduationCap, Trophy, Briefcase, Clock3 } from "lucide-react";
 import { useState } from "react";
+
+const MARKETING_FOLDERS = [
+  { label: "Catering", icon: UtensilsCrossed },
+  { label: "Schools", icon: GraduationCap },
+  { label: "Sports", icon: Trophy },
+  { label: "Businesses", icon: Briefcase },
+  { label: "Hours Signs", icon: Clock3 },
+];
 
 export default function Home() {
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [activeFolder, setActiveFolder] = useState<string | null>(null);
 
   return (
     <div className="flex min-h-screen flex-col bg-muted">
@@ -54,14 +63,46 @@ export default function Home() {
             </TabsContent>
 
             <TabsContent value="marketing-assets">
-              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-20">
-                <FolderOpen className="mb-4 h-12 w-12 text-muted-foreground/50" />
-                <h3 className="text-lg font-semibold text-muted-foreground">
-                  Marketing Assets
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Coming Soon — Downloadable templates, logos, and brand assets.
-                </p>
+              <div className="flex rounded-lg border bg-background overflow-hidden min-h-[480px]">
+                {/* Left: folder list */}
+                <div className="w-56 shrink-0 border-r bg-muted/30">
+                  <nav className="flex flex-col">
+                    {MARKETING_FOLDERS.map(({ label, icon: Icon }) => {
+                      const isActive = activeFolder === label;
+                      return (
+                        <button
+                          key={label}
+                          onClick={() => setActiveFolder(label)}
+                          className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors text-left w-full ${isActive
+                              ? "bg-primary/10 text-primary font-medium border-r-2 border-primary"
+                              : "text-foreground hover:bg-muted"
+                            }`}
+                        >
+                          <Icon className="h-4 w-4 shrink-0" />
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </nav>
+                </div>
+
+                {/* Right: contents */}
+                <div className="flex-1 flex flex-col items-center justify-center p-6 text-center text-muted-foreground">
+                  {activeFolder ? (
+                    <>
+                      <FolderOpen className="h-10 w-10 text-muted-foreground/40 mb-3" />
+                      <p className="text-sm font-medium text-muted-foreground">Coming Soon</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        SharePoint assets for <span className="font-medium">{activeFolder}</span> will appear here.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <FolderOpen className="h-10 w-10 text-muted-foreground/30 mb-3" />
+                      <p className="text-sm">Select a category on the left to view assets.</p>
+                    </>
+                  )}
+                </div>
               </div>
             </TabsContent>
 
