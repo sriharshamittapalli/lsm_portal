@@ -13,7 +13,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RequestDetailsModal } from "@/components/request-details-modal";
-import { JotFormModal } from "@/components/jotform-modal";
 import { LsmRequestFormModal } from "@/components/lsm-request-form-modal";
 import { getRequests } from "@/lib/store";
 import { DesignRequest } from "@/lib/types";
@@ -31,7 +30,6 @@ function statusClass(status: DesignRequest["status"]) {
 
 export function DesignRequests() {
   const [requests, setRequests] = useState<DesignRequest[]>([]);
-  const [jotFormOpen, setJotFormOpen] = useState(false);
   const [lsmFormOpen, setLsmFormOpen] = useState(false);
   const [detailsRequest, setDetailsRequest] = useState<DesignRequest | null>(
     null
@@ -57,10 +55,6 @@ export function DesignRequests() {
           </p>
         </div>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <Button variant="outline" onClick={() => setJotFormOpen(true)} className="w-full shrink-0 sm:w-auto">
-            <ClipboardList className="mr-2 h-4 w-4" />
-            Evergreen Order Form
-          </Button>
           <Button variant="outline" onClick={() => setLsmFormOpen(true)} className="w-full shrink-0 sm:w-auto">
             <FileText className="mr-2 h-4 w-4" />
             Custom Design Request
@@ -134,8 +128,6 @@ export function DesignRequests() {
           if (!open) setDetailsRequest(null);
         }}
       />
-
-      <JotFormModal open={jotFormOpen} onOpenChange={setJotFormOpen} />
 
       <LsmRequestFormModal open={lsmFormOpen} onOpenChange={setLsmFormOpen} />
     </div>

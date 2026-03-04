@@ -5,9 +5,12 @@ import { DesignRequests } from "@/components/design-requests";
 import { StoreHoursChanges } from "@/components/store-hours-changes";
 import { PriceChanges } from "@/components/price-changes";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Palette, BookOpen, FolderOpen, Clock, DollarSign } from "lucide-react";
+import { Palette, BookOpen, FolderOpen, Clock, DollarSign, ClipboardList, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 export default function Home() {
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+
   return (
     <div className="flex min-h-screen flex-col bg-muted">
       <Header />
@@ -35,6 +38,10 @@ export default function Home() {
               <TabsTrigger value="price-change">
                 <DollarSign className="mr-2 h-4 w-4" />
                 Price Change
+              </TabsTrigger>
+              <TabsTrigger value="evergreen-order-form">
+                <ClipboardList className="mr-2 h-4 w-4" />
+                Evergreen Order Form
               </TabsTrigger>
             </TabsList>
 
@@ -72,6 +79,24 @@ export default function Home() {
 
             <TabsContent value="price-change">
               <PriceChanges />
+            </TabsContent>
+
+            <TabsContent value="evergreen-order-form">
+              <div className="relative h-[80vh] w-full rounded-lg overflow-hidden">
+                {!iframeLoaded && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-background">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="mt-3 text-sm text-muted-foreground">Loading Evergreen Order Form...</p>
+                  </div>
+                )}
+                <iframe
+                  src={process.env.NEXT_PUBLIC_JOTFORM_URL}
+                  className="h-full w-full border-0"
+                  allow="fullscreen"
+                  title="Evergreen Order Form"
+                  onLoad={() => setIframeLoaded(true)}
+                />
+              </div>
             </TabsContent>
           </Tabs>
         </div>

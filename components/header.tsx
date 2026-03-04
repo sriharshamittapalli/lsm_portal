@@ -11,12 +11,11 @@ export function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex items-center gap-3">
           <Image
-            src="/yogurt-icon.png"
+            src="/yogurt-icon-transparent.png"
             alt="Yogurtland"
             width={56}
             height={56}
             className="h-12 w-12 sm:h-14 sm:w-14"
-            style={{ mixBlendMode: "screen", filter: "contrast(10)" }}
             priority
           />
           <p className="text-xs text-white/80 sm:text-sm">
