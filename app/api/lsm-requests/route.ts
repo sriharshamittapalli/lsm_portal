@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
       lsmTypes: body.lsmTypes,
       desiredMessage: body.desiredMessage,
       couponOffers: body.couponOffers || "",
+      couponCode: body.couponCode || "",
       couponExpirationDate: body.couponExpirationDate || "",
       specialInstructions: body.specialInstructions || "",
       sizeWidth: body.sizeWidth || "",
